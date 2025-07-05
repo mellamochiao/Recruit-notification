@@ -1,4 +1,4 @@
-# recruit-notification
+# Recruit-notification
 
 A lightweight Python automation tool that monitors the internship recruitment page of the Department of Statistics at NCKU and sends alerts to a private Discord channel if new announcements are posted within the last three days.
 
