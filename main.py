@@ -1,4 +1,7 @@
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import os
@@ -13,16 +16,17 @@ def send_discord_message(content):
     if not WEBHOOK_URL:
         print("❌ 沒有設定 DISCORD_WEBHOOK")
         return
-    response = requests.post(WEBHOOK_URL, json={"content": content})
+    response = requests.post(WEBHOOK_URL, json={"content": content}, verify=False)
     if response.status_code == 204:
         print("✅ 通知已發送")
     else:
         print(f"❌ 通知失敗：{response.status_code}\n{response.text}")
 
+
 def check_news():
     print("🔍 正在檢查網站最新消息...")
     try:
-        res = requests.get(URL)
+        res = requests.get(URL, timeout=10, verify=False)
         soup = BeautifulSoup(res.text, 'html.parser')
 
         # 抓所有最新消息區塊
