@@ -47,6 +47,7 @@ def check_news():
 
         today = datetime.today().date()
         threshold = today - timedelta(days=2)
+        send_discord_message("🧪 測試通知：程式已成功連接 Discord Webhook ✅")
         new_count = 0  # 統計幾筆符合條件的公告
 
         for item in items:
