@@ -9,7 +9,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.poolmanager import PoolManager
 
-# 關閉警告
+# 關閉 SSL 警告
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # 建立不驗證 SSL 的 requests session
@@ -36,27 +36,27 @@ def send_discord_message(content):
     else:
         print(f"❌ 通知失敗：{response.status_code}\n{response.text}")
 
-
 def check_news():
     print("🔍 正在檢查網站最新消息...")
     try:
         res = requests_session.get(URL, timeout=10, verify=certifi.where())
         soup = BeautifulSoup(res.text, 'html.parser')
 
-        # 抓所有最新消息區塊
         items = soup.select('.inews-w li')
+        print(f"📝 共抓到 {len(items)} 筆公告")
 
-        # 今天日期 & 範圍
         today = datetime.today().date()
-        threshold = today - timedelta(days=2)  # 三天內都通知
+        threshold = today - timedelta(days=2)
+        new_count = 0  # 統計幾筆符合條件的公告
 
         for item in items:
-            # 取日期（.news-day 中 span 為月日，尾部為年）
             date_block = item.select_one('.news-day')
-            if not date_block: continue
+            if not date_block:
+                continue
 
             span = date_block.select_one('span')
-            if not span: continue
+            if not span:
+                continue
 
             try:
                 month_day = span.text.strip()  # 例如 "06.03"
@@ -65,10 +65,9 @@ def check_news():
                 month, day = map(int, month_day.split('.'))
                 post_date = datetime(year, month, day).date()
             except:
-                continue  # 無法解析日期就跳過
+                continue  # 跳過無法解析的
 
             if post_date >= threshold:
-                # 抓標題與連結
                 title_tag = item.select_one('.news-title a')
                 title = title_tag.text.strip() if title_tag else "(無標題)"
                 link = title_tag['href'] if title_tag and 'href' in title_tag.attrs else URL
@@ -79,6 +78,12 @@ def check_news():
                     f"🔗 查看連結：{link}"
                 )
                 send_discord_message(message)
+                new_count += 1
+
+        if new_count == 0:
+            print("📭 沒有三天內的新公告")
+        else:
+            print(f"📬 本次發送了 {new_count} 筆通知")
 
     except Exception as e:
         print(f"⚠️ 發生錯誤：{e}")
