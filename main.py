@@ -1,11 +1,24 @@
-import requests
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
+import urllib3
+from bs4 import BeautifulSoup
+from datetime import datetime, timedelta
+import ssl
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.poolmanager import PoolManager
+
+# 關閉警告
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# 建立不驗證 SSL 的 requests session
+class UnsafeAdapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        kwargs['ssl_context'] = ssl._create_unverified_context()
+        return super().init_poolmanager(*args, **kwargs)
+
+requests_session = requests.Session()
+requests_session.mount('https://', UnsafeAdapter())
 
 load_dotenv()
 
@@ -16,7 +29,7 @@ def send_discord_message(content):
     if not WEBHOOK_URL:
         print("❌ 沒有設定 DISCORD_WEBHOOK")
         return
-    response = requests.post(WEBHOOK_URL, json={"content": content}, verify=False)
+    response = requests_session.post(WEBHOOK_URL, json={"content": content})
     if response.status_code == 204:
         print("✅ 通知已發送")
     else:
@@ -26,7 +39,7 @@ def send_discord_message(content):
 def check_news():
     print("🔍 正在檢查網站最新消息...")
     try:
-        res = requests.get(URL, timeout=10, verify=False)
+        res = requests_session.get(URL, timeout=10)
         soup = BeautifulSoup(res.text, 'html.parser')
 
         # 抓所有最新消息區塊
