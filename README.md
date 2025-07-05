@@ -13,7 +13,7 @@ Internship recruitment announcements (e.g., part-time survey caller openings) ar
 This script is scheduled to run daily on [Render.com](https://render.com/), acting as a private notifier for job-related announcements.
 
 ## Demo (Discord Notification Preview)
-![Discord Demo](<img width="670" height="180" alt="Image" src="https://github.com/user-attachments/assets/fa3c1d48-181d-4202-8b7e-0beeb53623cb" />)
+![Discord Demo](<"https://github.com/user-attachments/assets/fa3c1d48-181d-4202-8b7e-0beeb53623cb" />)
 
 
 ## Author
