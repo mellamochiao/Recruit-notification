@@ -1,3 +1,4 @@
+import certifi
 import os
 from dotenv import load_dotenv
 import urllib3
@@ -29,7 +30,7 @@ def send_discord_message(content):
     if not WEBHOOK_URL:
         print("❌ 沒有設定 DISCORD_WEBHOOK")
         return
-    response = requests_session.post(WEBHOOK_URL, json={"content": content})
+    response = requests_session.post(WEBHOOK_URL, json={"content": content}, verify=certifi.where())
     if response.status_code == 204:
         print("✅ 通知已發送")
     else:
@@ -39,7 +40,7 @@ def send_discord_message(content):
 def check_news():
     print("🔍 正在檢查網站最新消息...")
     try:
-        res = requests_session.get(URL, timeout=10)
+        res = requests_session.get(URL, timeout=10, verify=certifi.where())
         soup = BeautifulSoup(res.text, 'html.parser')
 
         # 抓所有最新消息區塊
