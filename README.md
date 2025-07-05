@@ -17,6 +17,5 @@ This script is scheduled to run daily on [Render.com](https://render.com/), acti
 
 
 ## Author
-mellamochiao 
-GitHub: [@mellamochiao](https://github.com/mellamochiao)
+[mellamochiao](https://github.com/mellamochiao)
 
